@@ -36,8 +36,22 @@ def eventDetail(request, eventID):
 def loginRequest(request):
 	username = request.POST['username']
 	password = request.POST['password']
+<<<<<<< Updated upstream
 	if username == "" or password == "":
 		error_message = '{"authenticated": false, "message": "Username and password cannot be empty"}'
 		return HttpResponse(error_message, content_type='application/json')
 
 	return logUserIn(username, password)
+=======
+	
+	user = authenticate(username=username, password=password)
+	if user is not None:
+		if user.is_active:
+			login(request, user)
+		else:
+			# Return a 'disabled account' error message
+			login(request, user)
+	else:
+		# Return an 'invalid login' error message.
+		login(request, user)
+>>>>>>> Stashed changes
