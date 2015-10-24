@@ -7,6 +7,9 @@ from django.conf import settings
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 
+from events.models import Event
+from django.db.models import Q
+
 #Other functions
 def logUserIn(username, password):
 	user = authenticate(username=username, password=password)
@@ -26,6 +29,15 @@ def logUserIn(username, password):
 def index(request):
 	return render(request, 'events/index.html')
 
+def eventSearch(request, searchTerm):
+	event_list = Event.objects.filter(Q(title__icontains = searchTerm) | Q(description__icontains = searchTerm))
+	context = RequestContext(request, {
+		'event_list': event_list,
+	})
+	template = loader.get_template('events/eventSearch.html')
+	return HttpResponse(template.render(context))
+
+
 def event(request):
 	return HttpResponse("all events")
 
@@ -36,22 +48,10 @@ def eventDetail(request, eventID):
 def loginRequest(request):
 	username = request.POST['username']
 	password = request.POST['password']
-<<<<<<< Updated upstream
+
 	if username == "" or password == "":
 		error_message = '{"authenticated": false, "message": "Username and password cannot be empty"}'
 		return HttpResponse(error_message, content_type='application/json')
 
 	return logUserIn(username, password)
-=======
-	
-	user = authenticate(username=username, password=password)
-	if user is not None:
-		if user.is_active:
-			login(request, user)
-		else:
-			# Return a 'disabled account' error message
-			login(request, user)
-	else:
-		# Return an 'invalid login' error message.
-		login(request, user)
->>>>>>> Stashed changes
+
