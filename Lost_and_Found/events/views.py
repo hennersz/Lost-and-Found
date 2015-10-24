@@ -49,7 +49,6 @@ def eventDetail(request, eventID):
 	return HttpResponse("viewing event %s" % eventID)
 
 def loginRequest(request):
-<<<<<<< HEAD
 	if request.method == 'POST':
 		username = request.POST['username']
 		password = request.POST['password']
@@ -60,14 +59,3 @@ def loginRequest(request):
 		return logUserIn(request, username, password)
 	elif request.method == 'GET':
 		return render(request, 'events/login.html')
-=======
-	username = request.POST['username']
-	password = request.POST['password']
-
-	if username == "" or password == "":
-		error_message = '{"authenticated": false, "message": "Username and password cannot be empty"}'
-		return HttpResponse(error_message, content_type='application/json')
-
-	return logUserIn(username, password)
-
->>>>>>> origin/front-end
