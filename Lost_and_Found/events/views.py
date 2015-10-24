@@ -11,16 +11,17 @@ def logUserIn(username, password):
 	user = authenticate(username=username, password=password)
 	if user is not None:
 		if user.is_active:
-			login(request, user)
-			return redirect('events/index.html')
+			error_message = "{authenticated: true}"
+			return HttpResponse(error_message, content_type='application/json')
 		else:
-			error_message = "The password is valid, but the account has been disabled!"
-			return render(request, 'events/login.html')
+			error_message = "{authenticated: false, message: 'The password is valid, but the account has been disabled!'}"
+			return HttpResponse(error_message, content_type='application/json')
 	else:
-		error_message = "The password is not correct, try again"
-		return render(request, 'events/login.html')
+		error_message = "{authenticated: false, message: 'The password is not correct, try again'}"
+		return HttpResponse(error_message, content_type='application/json')
 
 # Create your views here.
+#--------------------------------------------
 def index(request):
 	return render(request, 'events/index.html')
 
@@ -34,6 +35,7 @@ def login(request):
 	username = request.POST['username']
 	password = request.POST['password']
 	if username == "" or password == "":
-		return render(request, 'events/login.html')
+		error_message = "{authenticated: false, message: 'Username and password cannot be empty'}"
+		return HttpResponse(error_message, content_type='application/json')
 
 	return logUserIn(username, password)
