@@ -8,10 +8,11 @@ from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 
 #Other functions
-def logUserIn(username, password):
+def logUserIn(request, username, password):
 	user = authenticate(username=username, password=password)
 	if user is not None:
 		if user.is_active:
+			login(request, user)
 			error_message = '{"authenticated": true}'
 			return HttpResponse(error_message, content_type='application/json')
 		else:
@@ -24,20 +25,25 @@ def logUserIn(username, password):
 # Create your views here.
 #--------------------------------------------
 def index(request):
-	return render(request, 'events/index.html')
+	return render(request, 'events/index.html', {'user': request.user})
 
 def event(request):
-	return HttpResponse("all events")
+	if request.user.is_authenticated():
+		return HttpResponse("all events, logged in")
+	else:
+		return HttpResponse("all events, NOT logged in")
 
 def eventDetail(request, eventID):
 	return HttpResponse("viewing event %s" % eventID)
 
-@csrf_exempt
 def loginRequest(request):
-	username = request.POST['username']
-	password = request.POST['password']
-	if username == "" or password == "":
-		error_message = '{"authenticated": false, "message": "Username and password cannot be empty"}'
-		return HttpResponse(error_message, content_type='application/json')
+	if request.method == 'POST':
+		username = request.POST['username']
+		password = request.POST['password']
+		if username == "" or password == "":
+			error_message = '{"authenticated": false, "message": "Username and password cannot be empty"}'
+			return HttpResponse(error_message, content_type='application/json')
 
-	return logUserIn(username, password)
+		return logUserIn(request, username, password)
+	elif request.method == 'GET':
+		return render(request, 'events/login.html')
