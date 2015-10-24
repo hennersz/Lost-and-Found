@@ -7,5 +7,5 @@ urlpatterns = [
     # ex: /polls/5/
     url(r'^events/$', views.event, name='event'),
     url(r'^events/(?P<eventID>[0-9]+)/$', views.eventDetail, name='eventDetail'),
-    url(r'^login/$', views.login, name='login'),
+    url(r'^login/$', views.loginRequest, name='login'),
 ]
