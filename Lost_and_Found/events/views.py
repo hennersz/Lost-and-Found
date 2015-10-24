@@ -33,7 +33,7 @@ def eventDetail(request, eventID):
 def login(request):
 	username = request.POST['username']
 	password = request.POST['password']
-	if username == "" and password == "":
+	if username == "" or password == "":
 		return render(request, 'events/login.html')
 
 	return logUserIn(username, password)
