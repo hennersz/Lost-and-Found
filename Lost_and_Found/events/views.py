@@ -5,10 +5,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
-from events.models import Event, Item
+from events.models import Event, Item, Tag
 from django.db.models import Q
+from clarifai.client import ClarifaiApi
+import os
 
 import json
+
+os.environ["CLARIFAI_APP_ID"] = "ikwxtfs_UBg-U7axueKE_xOVFa0V9zcJi6Ns76YU"
+os.environ["CLARIFAI_APP_SECRET"] = "vqYoV9vC1gK9eZ3Icomtnk5TJxNmxygLajC5L_ae"
 
 #Other functions
 def logUserIn(request, username, password):
@@ -53,6 +58,14 @@ def eventDetail(request, eventID):
 	lostItems = allItems.filter(lostFount = False)
 	return render(request, 'events/eventDetail.html', {'event': Event.objects.get(id = eventID), 'lostItems': lostItems, 'foundItems': foundItems})
 
+def getTags(item):
+	clarifai_api = ClarifaiApi() # assumes environment variables are set.
+	result = clarifai_api.tag_image_urls(item.imgURL)
+
+	result = result["results"][0]["result"]["tag"]["classes"]
+	for i in result:
+		Tag(tagText=i, item=item).save()
+
 @csrf_exempt
 def items(request):
 	if request.method == 'POST' and request.user and request.user.is_authenticated:
@@ -61,7 +74,9 @@ def items(request):
 		lostFount = (request.POST['lostFount'] == "1")
 		imgURL = request.POST['imgURL']
 		eventID = request.POST['eventID']
-		Item(title=title, description=description, imgURL=imgURL, owner=User.objects.get(id=request.user.id), event=Event.objects.get(id=eventID), lostFount = lostFount).save()
+		item = Item(title=title, description=description, imgURL=imgURL, owner=User.objects.get(id=request.user.id), event=Event.objects.get(id=eventID), lostFount = lostFount)
+		item.save()
+		getTags(item)
 		return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def logoutRequest(request):
