@@ -13,12 +13,14 @@ Events
     {% for event in events %}
     	<a href="../events/{{event.id}}">
         <li class="list-group-item">
-        	{{ event.title }}
-        	{{ event.description }}
-        	{{ event.host.username }}
-        	{{ event.address }}
-        	<span class="badge" style="background-color:red">{{ event.lostItemCount }}</span>
+          <span class="badge" style="background-color:red">{{ event.lostItemCount }}</span>
         	<span class="badge" style="background-color:green">{{ event.foundItemCount }}</span>
+          <div style="color:black">
+          	<p><b>{{ event.title }}</b></p>
+          	<p>{{ event.description }}</p>
+          	<p>{{ event.host.username }}
+          	{{ event.address }} </p>
+        </div>
         </li>
         </a>
     {% endfor %}
