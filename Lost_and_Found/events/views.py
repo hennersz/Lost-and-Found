@@ -1,12 +1,13 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
-from events.models import Event
+from events.models import Event, Item
 from django.db.models import Q
+
 import json
 
 #Other functions
@@ -31,8 +32,13 @@ def index(request):
 
 def eventSearch(request):
 	searchTerm = request.GET['searchTerm']
-	event_list = Event.objects.filter(Q(title__icontains = searchTerm) | Q(description__icontains = searchTerm))
-	return render(request, 'events/eventSearch.html', { 'event_list': event_list })
+	events = Event.objects.filter(Q(title__icontains = searchTerm) | Q(description__icontains = searchTerm))
+	for event in events:
+		allItems = Item.objects.filter(event = event.id)
+		print "found %d items under event %s" % (allItems.count(), event.title)
+		event.lostItemCount = allItems.filter(lostFount = 0).count()
+		event.foundItemCount = allItems.count() - event.lostItemCount
+	return render(request, 'events/eventSearch.html', { 'events': events,})
 
 
 def event(request):
@@ -42,7 +48,21 @@ def event(request):
 		return HttpResponse("all events, NOT logged in")
 
 def eventDetail(request, eventID):
-	return HttpResponse("viewing event %s" % eventID)
+	allItems = Item.objects.filter(event = eventID)
+	foundItems = allItems.filter(lostFount = True)
+	lostItems = allItems.filter(lostFount = False)
+	return render(request, 'events/eventDetail.html', {'event': Event.objects.get(id = eventID), 'lostItems': lostItems, 'foundItems': foundItems})
+
+@csrf_exempt
+def items(request):
+	if request.method == 'POST' and request.user and request.user.is_authenticated:
+		title = request.POST['title']
+		description = request.POST['description']
+		lostFount = (request.POST['lostFount'] == "1")
+		imgURL = request.POST['imgURL']
+		eventID = request.POST['eventID']
+		Item(title=title, description=description, imgURL=imgURL, owner=User.objects.get(id=request.user.id), event=Event.objects.get(id=eventID), lostFount = lostFount).save()
+		return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def logoutRequest(request):
 	logout(request)

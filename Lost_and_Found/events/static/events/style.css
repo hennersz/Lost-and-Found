@@ -1,4 +1,17 @@
 body
 {
-	background-color:rgb(246, 233, 199) !important;
+	background-color:rgb(50, 184, 213) !important;
+}
+
+h1, h2, h3, h4, h5, h6
+{
+	color: white !important;
+}
+
+#itemModal input, #itemModal textarea
+{
+	border:1px solid #aaa;
+	border-radius:5px;
+	padding:5px;
+	margin:5px;
 }
