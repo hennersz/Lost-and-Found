@@ -3,3 +3,14 @@ body
 	background-color:rgb(246, 233, 199) !important;
 }
 
+.form-actions 
+{
+    margin: 0;
+    background-color: transparent;
+    text-align: center;
+}
+
+.navbar-brand
+{
+    padding:3px 3px;
+}

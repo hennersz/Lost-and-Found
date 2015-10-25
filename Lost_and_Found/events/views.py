@@ -24,7 +24,7 @@ def logUserIn(username, password):
 # Create your views here.
 #--------------------------------------------
 def index(request):
-	return render(request, 'events/index.html')
+	return render(request, 'events/home.html')
 
 def event(request):
 	return HttpResponse("all events")
