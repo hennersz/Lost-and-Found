@@ -2,11 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-
 from django.conf import settings
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
-
 from events.models import Event
 from django.db.models import Q
 import json
@@ -31,13 +29,10 @@ def logUserIn(request, username, password):
 def index(request):
 	return render(request, 'events/index.html', {'user': request.user})
 
-def eventSearch(request, searchTerm):
+def eventSearch(request):
+	searchTerm = request.GET['searchTerm']
 	event_list = Event.objects.filter(Q(title__icontains = searchTerm) | Q(description__icontains = searchTerm))
-	context = RequestContext(request, {
-		'event_list': event_list,
-	})
-	template = loader.get_template('events/eventSearch.html')
-	return HttpResponse(template.render(context))
+	return render(request, 'events/eventSearch.html', { 'event_list': event_list })
 
 
 def event(request):
