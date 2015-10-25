@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 from django.conf import settings
 from django.shortcuts import redirect
@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from events.models import Event
 from django.db.models import Q
+import json
 
 #Other functions
 def logUserIn(request, username, password):
@@ -48,6 +49,11 @@ def event(request):
 def eventDetail(request, eventID):
 	return HttpResponse("viewing event %s" % eventID)
 
+def logoutRequest(request):
+	logout(request)
+	return HttpResponse(json.dumps({'loggedOut':True}), content_type='application/json')
+
+@csrf_exempt
 def loginRequest(request):
 	if request.method == 'POST':
 		username = request.POST['username']

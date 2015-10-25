@@ -1,6 +1,26 @@
 {% extends "events/base.html" %}
-{% block title %}
+	{% block title %}
+		Lost & Found
+	{% endblock %}
+	{% load staticfiles %}
+	{% block content %}
+		<div class="jumbotron">
+				<img style="margin-left:auto;margin-right:auto;margin-bottom:25px;max-width:300px" class="img-responsive" src="{% static 'events/logo.png' %}" />
+				<h4 style="text-align:center;color:#777 !important; padding-bottom:20px">crowdsourced lost and found database</h4>
+			
+			<div class="row">
+				<div class="col-sm-3">
+				</div>
 
-{% endblock %}
-{% block content %}
-{% endblock %}
+				<div class="col-sm-6">
+					<form action="eventSearch/" method="get">
+						<input type="text" style="text-align:center;width:calc(100% - 110px);font-size:1.5em;outline:0;border:none;margin-bottom:0;border-radius:px;padding:5px" placeholder="Enter an event name"></input>
+						<button type="button" style="width:90px;height:40px;margin:0;" class="btn btn-success">Search</button>
+					</form>
+				</div>
+				<div class="col-sm-3">
+				</div>
+			</div>
+		</div>
+
+	{% endblock %}
